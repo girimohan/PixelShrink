@@ -19,6 +19,24 @@ const rawBasePath = process.env.VITE_BASE_PATH || '/'
 const baseSegments = rawBasePath.split('/').filter(Boolean)
 const basePath = baseSegments.length ? `/${baseSegments.join('/')}/` : '/'
 const siteUrl = (process.env.SITE_URL || 'https://girimohan.github.io/PixelShrink').replace(/\/+$/, '')
+const homepageFaqs = [
+  {
+    question: 'Are my images uploaded to a server?',
+    answer: 'No. Image decoding, resizing and compression happen in your browser. The website does not send image files to a processing server.',
+  },
+  {
+    question: 'Which image formats are supported?',
+    answer: 'PixelShrink accepts JPG, PNG and WebP images. You can export as JPG, PNG or WebP, subject to browser support.',
+  },
+  {
+    question: 'Can every image be compressed to 200 KB?',
+    answer: 'Not always. Very large or detailed images may need to be resized to reach a strict target. PixelShrink reports when the requested target could not be achieved.',
+  },
+  {
+    question: 'Will image quality change?',
+    answer: 'Lossy JPG and WebP compression can reduce image quality. PNG output is lossless from the canvas representation, but re-encoding may remove metadata and may not preserve every original file property.',
+  },
+]
 const vite = await createServer({ appType: 'custom', logLevel: 'error', server: { middlewareMode: true } })
 
 try {
@@ -31,14 +49,37 @@ try {
     const routePath = route === '/' ? '' : `${route.slice(1)}/`
     const appPath = `${basePath}${routePath}`.replace(/\/+/g, '/')
     const canonicalUrl = `${siteUrl}${route === '/' ? '/' : `${route}/`}`
+    const graph = [{
+      '@type': 'WebApplication',
+      '@id': `${canonicalUrl}#webapp`,
+      name: 'PixelShrink',
+      url: canonicalUrl,
+      description: page.description,
+      applicationCategory: 'MultimediaApplication',
+      operatingSystem: 'Any',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    }]
+    if (route === '/') {
+      graph.push({
+        '@type': 'FAQPage',
+        '@id': `${canonicalUrl}#faq`,
+        mainEntity: homepageFaqs.map(({ question, answer }) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: answer },
+        })),
+      })
+    }
+    const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c')
     const markup = renderToString(createElement(App, { initialPath: appPath }))
     const html = template
       .replaceAll('__PAGE_TITLE__', escapeHtml(page.title))
       .replaceAll('__PAGE_DESCRIPTION__', escapeHtml(page.description))
       .replaceAll('__CANONICAL_URL__', escapeHtml(canonicalUrl))
+      .replace('__STRUCTURED_DATA__', structuredData)
       .replace('<div id="root"></div>', `<div id="root">${markup}</div>`)
 
-    if (html.includes('__PAGE_') || html.includes('__CANONICAL_URL__') || !html.includes('<div id="root">')) {
+    if (html.includes('__PAGE_') || html.includes('__CANONICAL_URL__') || html.includes('__STRUCTURED_DATA__') || !html.includes('<div id="root">')) {
       throw new Error(`Failed to generate static HTML for ${route}.`)
     }
 
@@ -47,7 +88,14 @@ try {
       : path.join(outputDirectory, route.slice(1), 'index.html')
     await mkdir(path.dirname(outputPath), { recursive: true })
     await writeFile(outputPath, html)
-    sitemapUrls.push(`  <url><loc>${escapeHtml(canonicalUrl)}</loc></url>`)
+    const priority = route === '/' ? '1.0' : '0.8'
+    sitemapUrls.push([
+      '  <url>',
+      `    <loc>${escapeHtml(canonicalUrl)}</loc>`,
+      '    <lastmod>2026-11-16</lastmod>',
+      `    <priority>${priority}</priority>`,
+      '  </url>',
+    ].join('\n'))
   }
 
   const sitemap = [

@@ -1,6 +1,12 @@
 # PixelShrink
 
-A privacy-first image compressor and resizer built with React, TypeScript and Vite. Image files are processed locally in the browser; there is no upload API or image-storage backend.
+A free online image compressor, resizer, and converter built with React, TypeScript, and Vite. PixelShrink processes images 100% client-side in your browser: files are never uploaded to a processing server, and no account is required.
+
+## Live tools
+- [PixelShrink image compressor](https://girimohan.github.io/PixelShrink/)
+- [Free image resizer](https://girimohan.github.io/PixelShrink/image-resizer/)
+- [JPG to WebP converter](https://girimohan.github.io/PixelShrink/jpg-to-webp/)
+- [Compress image to 200 KB](https://girimohan.github.io/PixelShrink/compress-image-to-200kb/)
 
 ## Requirements
 - Node.js 20.19+ or 22.12+

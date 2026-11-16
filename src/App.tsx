@@ -12,10 +12,10 @@ function sizeChangeLabel(originalSize: number, outputSize: number) {
 }
 
 export const routes = {
-  '/': { title: 'Free Image Compressor Online — PixelShrink', description: 'Compress JPG, PNG and WebP images online for free. Resize images and reduce file size privately in your browser.', heading: 'Compress images. Keep the quality.', intro: 'Make your images smaller in seconds. No account, no uploads, no complicated settings.' },
-  '/image-resizer': { title: 'Free Image Resizer Online — PixelShrink', description: 'Resize JPG, PNG and WebP images by setting maximum width and height. Free, private, browser-based image resizing.', heading: 'Resize images to the dimensions you need.', intro: 'Set a maximum width and height, then download your resized image.' },
-  '/jpg-to-webp': { title: 'JPG to WebP Converter — PixelShrink', description: 'Convert JPG images to WebP online for free. Local browser processing keeps your images on your device.', heading: 'Convert JPG images to WebP.', intro: 'Create smaller, modern WebP images without sending files to a server.' },
-  '/compress-image-to-200kb': { title: 'Compress Image to 200KB — PixelShrink', description: 'Reduce an image to 200 KB or less where possible. Free, private, browser-based image compression.', heading: 'Compress an image to 200 KB.', intro: 'Set a practical file-size target and let PixelShrink find a suitable quality.' },
+  '/': { title: 'PixelShrink – Free Online Image Compressor (JPG, PNG, WebP)', description: 'Compress JPG, PNG, and WebP images in seconds directly in your browser. 100% private—no file uploads, no signup, and no watermarks.', heading: 'Compress images. Keep the quality.', intro: 'Make your images smaller in seconds. No account, no uploads, no complicated settings.' },
+  '/image-resizer': { title: 'Free Image Resizer Online – Resize JPG, PNG & WebP | PixelShrink', description: 'Resize JPG, PNG, and WebP images online by setting maximum width and height. Free image resizer with private, in-browser processing.', heading: 'Resize images to the dimensions you need.', intro: 'Set a maximum width and height, then download your resized image.' },
+  '/jpg-to-webp': { title: 'JPG to WebP Converter – Free Online Tool | PixelShrink', description: 'Convert JPG images to WebP online for free. Private, in-browser processing keeps your images on your device—no uploads required.', heading: 'Convert JPG images to WebP.', intro: 'Create smaller, modern WebP images without sending files to a server.' },
+  '/compress-image-to-200kb': { title: 'Compress Image to 200KB Online – Free Tool | PixelShrink', description: 'Compress an image to 200 KB or less where possible. Free JPG, PNG, and WebP compression with private, in-browser processing.', heading: 'Compress an image to 200 KB.', intro: 'Set a practical file-size target and let PixelShrink find a suitable quality.' },
 } as const
 
 function App({ initialPath }: { initialPath?: string } = {}) {
@@ -39,6 +39,8 @@ function App({ initialPath }: { initialPath?: string } = {}) {
     document.querySelector('meta[name="description"]')?.setAttribute('content', page.description)
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', page.title)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', page.description)
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', page.title)
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', page.description)
     const canonicalPath = `${window.location.pathname.replace(/\/+$/, '')}/`
     const canonicalUrl = new URL(canonicalPath, window.location.origin).href
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonicalUrl)
@@ -189,6 +191,15 @@ function App({ initialPath }: { initialPath?: string } = {}) {
       </section>
 
       <section className="how" id="how-it-works"><div className="section-intro"><span className="eyebrow">THREE SIMPLE STEPS</span><h2>Smaller images in seconds.</h2></div><div className="steps"><div><b>01</b><h3>Choose images</h3><p>Select JPG, PNG or WebP files from your device.</p></div><div><b>02</b><h3>Set your options</h3><p>Choose a format, quality, dimensions or target file size.</p></div><div><b>03</b><h3>Download</h3><p>Compare the result and save your optimized image.</p></div></div></section>
+
+      {path === '/' && <section className="more-tools">
+        <div className="section-intro"><span className="eyebrow">More Free Tools</span><h2>Find the right image tool.</h2></div>
+        <div className="more-tool-grid">
+          <a href={pageUrl('/image-resizer')}><h3>Image Resizer</h3><p>Resize images to the width and height you need.</p></a>
+          <a href={pageUrl('/jpg-to-webp')}><h3>JPG to WebP Converter</h3><p>Convert JPG images to WebP right in your browser.</p></a>
+          <a href={pageUrl('/compress-image-to-200kb')}><h3>Compress Image to 200 KB</h3><p>Try to meet a 200 KB target with adjustable compression.</p></a>
+        </div>
+      </section>}
 
       <section className="faq"><div className="section-intro"><span className="eyebrow">GOOD TO KNOW</span><h2>Frequently asked questions</h2></div>
         <details><summary>Are my images uploaded to a server?</summary><p>No. Image decoding, resizing and compression happen in your browser. The website does not send image files to a processing server.</p></details>

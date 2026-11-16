@@ -84,7 +84,7 @@ function App() {
     const url = URL.createObjectURL(item.result.blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = safeOutputName(item.file.name, format)
+    a.download = safeOutputName(item.file.name, item.result.format)
     document.body.appendChild(a)
     a.click()
     a.remove()
@@ -128,24 +128,29 @@ function App() {
           <div className="settings-heading"><span><SlidersHorizontal size={17}/> Compression settings</span><span className="subtle">Adjust before processing</span></div>
           <div className="settings-grid">
             <label>Output format
-              <span className="select-wrap"><select value={format} onChange={e => setFormat(e.target.value as OutputFormat)}><option value="image/webp">WebP (recommended)</option><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select><ChevronDown size={15}/></span>
+              <span className="select-wrap"><select value={format} onChange={e => setFormat(e.target.value as OutputFormat)}><option value="image/webp">WebP (best for websites)</option><option value="image/jpeg">JPG (widest compatibility)</option><option value="image/png">PNG (lossless, transparency)</option></select><ChevronDown size={15}/></span>
             </label>
             <label>Target file size (optional)
-              <span className="input-wrap"><input type="number" min="1" max="25000" placeholder="e.g. 200" value={targetKB} onChange={e => setTargetKB(e.target.value)}/><span>KB</span></span>
+              <span className="input-wrap"><input type="number" min="1" max="25000" step="1" placeholder="e.g. 200" value={targetKB} onChange={e => setTargetKB(e.target.value)}/><span>KB</span></span>
             </label>
             <label>Max width (optional)
-              <span className="input-wrap"><input type="number" min="1" max="12000" placeholder="Original" value={maxWidth} onChange={e => setMaxWidth(e.target.value)}/><span>px</span></span>
+              <span className="input-wrap"><input type="number" min="1" max="12000" step="10" placeholder="Original" value={maxWidth} onChange={e => setMaxWidth(e.target.value)}/><span>px</span></span>
             </label>
             <label>Max height (optional)
-              <span className="input-wrap"><input type="number" min="1" max="12000" placeholder="Original" value={maxHeight} onChange={e => setMaxHeight(e.target.value)}/><span>px</span></span>
+              <span className="input-wrap"><input type="number" min="1" max="12000" step="10" placeholder="Original" value={maxHeight} onChange={e => setMaxHeight(e.target.value)}/><span>px</span></span>
             </label>
+          </div>
+          <div className="target-presets" role="group" aria-label="Common target file sizes">
+            <span>Quick target</span>
+            {[['200 KB', '200'], ['500 KB', '500'], ['1 MB', '1024']].map(([label, value]) => <button key={value} className={targetKB === value ? 'preset-button active' : 'preset-button'} aria-pressed={targetKB === value} onClick={() => setTargetKB(targetKB === value ? '' : value)}>{label}</button>)}
           </div>
           <label className={`quality-control ${targetKB || format === 'image/png' ? 'disabled' : ''}`}>
             <span>Image quality <strong>{quality}%</strong></span>
             <input type="range" min="10" max="95" value={quality} disabled={!!targetKB || format === 'image/png'} onChange={e => setQuality(Number(e.target.value))}/>
             <span className="range-labels"><small>Smaller file</small><small>Higher quality</small></span>
-            {targetKB && <small>Quality is automatically adjusted to meet your target.</small>}
-            {format === 'image/png' && <small>PNG export is lossless; quality setting does not apply.</small>}
+            {targetKB && format !== 'image/png' && <small>Quality is adjusted to try to meet your target.</small>}
+            {targetKB && format === 'image/png' && <small>PNG is lossless; reduce the dimensions to reach a smaller target.</small>}
+            {!targetKB && format === 'image/png' && <small>PNG is lossless; quality setting does not apply.</small>}
           </label>
           <div className="settings-footer"><span><ShieldCheck size={15}/> Processing happens locally in your browser</span><button className="button button-primary" disabled={!items.length || items.some(item => item.busy)} onClick={compressAll}>Compress {items.length ? `${items.length} image${items.length > 1 ? 's' : ''}` : 'images'} <ArrowRight size={16}/></button></div>
         </div>

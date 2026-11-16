@@ -29,12 +29,14 @@ To deploy on another host or a custom domain, update the canonical URL in `index
 - JPG, PNG and WebP output
 - Quality control for lossy formats
 - Target size search for JPG/WebP
+- One-click target-size presets
 - Maximum width and height resizing
 - Multiple images, up to 20 per batch
 - Local processing; files are not uploaded
 
 ## Notes and limitations
 - The browser's canvas encoder determines output size and quality. Exact byte targets are not guaranteed; the app reports when a target cannot be reached at the selected dimensions.
+- WebP is the default for website use; JPG is available for broader app and upload compatibility. PNG quality cannot be adjusted.
 - PNG export uses browser canvas PNG encoding; the quality slider does not apply.
 - Canvas re-encoding can remove EXIF metadata, GPS metadata, embedded color profiles and other ancillary data. Do not use this tool where preserving original metadata is required.
 - Animated GIFs, SVG, HEIC/HEIF and RAW formats are not supported.

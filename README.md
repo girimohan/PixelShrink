@@ -20,7 +20,7 @@ npm run preview
 ```
 
 ## Deploy to GitHub Pages
-The included GitHub Actions workflow builds and publishes the site when changes are pushed to `main`. Enable **Settings → Pages → Build and deployment → GitHub Actions** in the repository. The workflow handles the `/PixelShrink/` project-site path and SPA fallback for the tool pages.
+The included GitHub Actions workflow builds and publishes the site when changes are pushed to `main`. Enable **Settings → Pages → Build and deployment → GitHub Actions** in the repository. The workflow handles the `/PixelShrink/` project-site path and publishes direct entries for each tool page.
 
 To deploy on another host or a custom domain, update the canonical URL in `index.html` and the sitemap URL in `public/robots.txt` and `public/sitemap.xml`. For Cloudflare Pages, use `npm run build` and `dist` as the output directory.
 

@@ -20,9 +20,9 @@ npm run preview
 ```
 
 ## Deploy to GitHub Pages
-The included GitHub Actions workflow builds and publishes the site when changes are pushed to `main`. Enable **Settings → Pages → Build and deployment → GitHub Actions** in the repository. The workflow handles the `/PixelShrink/` project-site path and publishes direct entries for each tool page.
+The included GitHub Actions workflow builds and publishes the site when changes are pushed to `main`. Enable **Settings → Pages → Build and deployment → GitHub Actions** in the repository. The build prerenders each tool page with its own title, description and canonical URL, while the workflow handles the `/PixelShrink/` project-site path and SPA fallback.
 
-To deploy on another host or a custom domain, update the canonical URL in `index.html` and the sitemap URL in `public/robots.txt` and `public/sitemap.xml`. For Cloudflare Pages, use `npm run build` and `dist` as the output directory.
+For another host or a custom domain, set `SITE_URL` to the canonical site origin/path during `npm run build`. For Cloudflare Pages, use `npm run build` and `dist` as the output directory.
 
 ## Features
 - JPG, PNG and WebP input
@@ -41,5 +41,5 @@ To deploy on another host or a custom domain, update the canonical URL in `index
 - Canvas re-encoding can remove EXIF metadata, GPS metadata, embedded color profiles and other ancillary data. Do not use this tool where preserving original metadata is required.
 - Animated GIFs, SVG, HEIC/HEIF and RAW formats are not supported.
 - Images are limited to 25 MB each and 20 files per batch.
-- Page titles are selected client-side for the SEO landing routes. For stronger search indexing, prerender each route to static HTML before scaling SEO.
+- Landing pages are prerendered as static HTML so their content and metadata are available without client-side rendering.
 - The Google Fonts stylesheet is optional. Remove the `@import` in `src/styles.css` to avoid third-party font requests and use system fonts only.

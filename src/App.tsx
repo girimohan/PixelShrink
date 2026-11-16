@@ -11,15 +11,16 @@ function sizeChangeLabel(originalSize: number, outputSize: number) {
   return 'Same file size'
 }
 
-const routes = {
+export const routes = {
   '/': { title: 'Free Image Compressor Online — PixelShrink', description: 'Compress JPG, PNG and WebP images online for free. Resize images and reduce file size privately in your browser.', heading: 'Compress images. Keep the quality.', intro: 'Make your images smaller in seconds. No account, no uploads, no complicated settings.' },
-  '/image-resizer': { title: 'Free Image Resizer Online — PixelShrink', description: 'Resize images to exact pixel dimensions in your browser. Free JPG, PNG and WebP image resizing.', heading: 'Resize images to the dimensions you need.', intro: 'Set a maximum width and height, then download your resized image.' },
+  '/image-resizer': { title: 'Free Image Resizer Online — PixelShrink', description: 'Resize JPG, PNG and WebP images by setting maximum width and height. Free, private, browser-based image resizing.', heading: 'Resize images to the dimensions you need.', intro: 'Set a maximum width and height, then download your resized image.' },
   '/jpg-to-webp': { title: 'JPG to WebP Converter — PixelShrink', description: 'Convert JPG images to WebP online for free. Local browser processing keeps your images on your device.', heading: 'Convert JPG images to WebP.', intro: 'Create smaller, modern WebP images without sending files to a server.' },
   '/compress-image-to-200kb': { title: 'Compress Image to 200KB — PixelShrink', description: 'Reduce an image to 200 KB or less where possible. Free, private, browser-based image compression.', heading: 'Compress an image to 200 KB.', intro: 'Set a practical file-size target and let PixelShrink find a suitable quality.' },
 } as const
 
-function App() {
-  const path = window.location.pathname.slice(import.meta.env.BASE_URL.length - 1).replace(/\/$/, '') || '/'
+function App({ initialPath }: { initialPath?: string } = {}) {
+  const pathname = initialPath ?? window.location.pathname
+  const path = pathname.slice(import.meta.env.BASE_URL.length - 1).replace(/\/$/, '') || '/'
   const page = routes[path as keyof typeof routes] ?? routes['/']
   const inputRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<Item[]>([])
@@ -35,8 +36,13 @@ function App() {
 
   useEffect(() => {
     document.title = page.title
-    const desc = document.querySelector('meta[name="description"]')
-    desc?.setAttribute('content', page.description)
+    document.querySelector('meta[name="description"]')?.setAttribute('content', page.description)
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', page.title)
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', page.description)
+    const canonicalPath = `${window.location.pathname.replace(/\/+$/, '')}/`
+    const canonicalUrl = new URL(canonicalPath, window.location.origin).href
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonicalUrl)
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonicalUrl)
   }, [page])
 
   useEffect(() => {
@@ -45,7 +51,10 @@ function App() {
 
   const totalSaved = useMemo(() => items.reduce((sum, item) => sum + (item.result ? Math.max(0, item.file.size - item.result.blob.size) : 0), 0), [items])
   const updateItem = (id: string, patch: Partial<Item>) => setItems(current => current.map(item => item.id === id ? { ...item, ...patch } : item))
-  const pageUrl = (route: string) => `${import.meta.env.BASE_URL}${route.replace(/^\//, '')}`
+  const pageUrl = (route: string) => {
+    const normalizedRoute = route.replace(/^\/|\/$/g, '')
+    return normalizedRoute ? `${import.meta.env.BASE_URL}${normalizedRoute}/` : import.meta.env.BASE_URL
+  }
 
   function addFiles(fileList: FileList | File[]) {
     const incoming = Array.from(fileList)

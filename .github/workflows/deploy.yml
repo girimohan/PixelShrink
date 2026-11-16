@@ -31,13 +31,9 @@ jobs:
         run: npm run build
         env:
           VITE_BASE_PATH: /PixelShrink/
-      - name: Add route entries and SPA fallback
-        run: |
-          cp dist/index.html dist/404.html
-          for route in image-resizer jpg-to-webp compress-image-to-200kb; do
-            mkdir -p "dist/$route"
-            cp dist/index.html "dist/$route/index.html"
-          done
+          SITE_URL: https://girimohan.github.io/PixelShrink
+      - name: Add SPA fallback
+        run: cp dist/index.html dist/404.html
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
